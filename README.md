@@ -1,6 +1,11 @@
 # knights-tour
 A knight's tour sequence problem solution done with Python
 
+# Sample usage:
+
+python KnightsTour.py 5 2
+
+
 # Additional Hints:
 A.  It is OK for a key to be used multiple times in the same sequence, subject to the length and
     number of vowel constraints only.  People familiar with the related-sounding "Knight's Tour" problem
