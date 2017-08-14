@@ -211,6 +211,8 @@ def main():
                                       ('1', (4, 2)), ('2', (4, 3)), ('3', (4, 4))])
 
     key_len = int(sys.argv[1])
+    assert key_len >= 1, 'Sequence key length needs to be greater than or equal to 1'
+
     vowels_allowed = int(sys.argv[2])
 
     KnightTour(key_len, key_pad, vowels_allowed).run()
