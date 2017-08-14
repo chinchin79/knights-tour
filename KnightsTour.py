@@ -5,20 +5,28 @@ from Memoization import Memoized, memoized_generator, generator_memoize
 
 class KnightTour:
 
-    def __init__(self, key_len, key_pad):
+    def __init__(self, key_len, key_pad, vowels_allowed=0):
         self.key_len = key_len
         self.key_pad = key_pad
+        self.vowels_allowed = vowels_allowed
         self._sequences = {k: [k] for k in key_pad.iterkeys()}
         self._moves = self.all_moves
         self._paths = self.all_paths
 
     def run(self):
         num_done = 0
-        for k, v in self.key_pad.items():
-            for n in range(1, self.key_len):
-                num = self.sequence_engine(k)
-                num_done += num
-        print "Possible moves are: %s" % str(num_done)
+        if self.key_len == 1:
+            if self.vowels_allowed >= 1:
+                num_done = len(self._paths)
+            elif self.vowels_allowed == 0:
+                num_done = len([k for k, v in self._paths.iteritems() if k not in 'aeiou'])
+        else:
+            for k, v in self.key_pad.items():
+                for n in range(0, self.key_len):
+                    num = self.sequence_engine(k)
+                    num_done += num
+
+        print "Possible knight moves are %s with %s vowel(s) allowed per move" % (str(num_done), self.vowels_allowed)
 
     #@profile
     def sequence_engine(self, k):
@@ -32,12 +40,12 @@ class KnightTour:
 
             for seq in seqs:
                 # Need to make sure we don't have a sequence with 2 or more vowels
-                if len([letter for letter in seq if letter in 'aeiou']) > 2:
+                if len([letter for letter in seq if letter in 'aeiou']) > self.vowels_allowed:
                     seqs.remove(seq)
 
             if len(seqs[0]) == self.key_len:
                 # LISANDRO TO DO:  sanity check, this should be done using pytest
-                if len([letter for letter in seq if letter in 'aeiou']) <= 2:
+                if len([letter for letter in seq if letter in 'aeiou']) <= self.vowels_allowed:
                     mul = self.sequence_adder(seqs)
                     num_done += mul
 
@@ -125,7 +133,10 @@ class KnightTour:
         """
 
         This method receives a list of sequences that differ only in the last character.
-        I add the possible paths for the FIRST sequence (for example, ('a'->'h'=2) + ('h'->'a')=2))
+
+        I add the possible paths for the FIRST sequence. For example, key 'a' knight move to key 'h'
+        can be done in two ways (eg: ('abch') + ('afgh') = 2 moves))
+
         For all remaining sequences on the list, I only add the final path char combination.
 
         The input is a list of sequences based on the key_len, for example here are the
@@ -200,8 +211,9 @@ def main():
                                       ('1', (4, 2)), ('2', (4, 3)), ('3', (4, 4))])
 
     key_len = int(sys.argv[1])
+    vowels_allowed = int(sys.argv[2])
 
-    KnightTour(key_len, key_pad).run()
+    KnightTour(key_len, key_pad, vowels_allowed).run()
     print('Done.')
 
 
