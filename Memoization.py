@@ -1,5 +1,7 @@
 import collections
 import functools
+from itertools import tee
+from types import GeneratorType
 
 
 class Memoized(object):
@@ -36,3 +38,40 @@ class Memoized(object):
         """
         return functools.partial(self.__call__, obj)
 
+
+Tee = tee([], 1)[0].__class__
+
+
+def memoized_generator(f):
+    cache = {}
+
+    def ret(*args):
+        if args not in cache:
+            cache[args] = f(*args)
+        if isinstance(cache[args], (GeneratorType, Tee)):
+            # the original can't be used any more,
+            # so we need to change the cache as well
+            cache[args], r = tee(cache[args])
+            return r
+        return cache[args]
+    return ret
+
+
+def generator_memoize(func):
+    def inner(arg):
+        if isinstance(arg, list):
+            # Make arg immutable
+            arg = tuple(arg)
+        if arg in inner.cache:
+            print "Using cache for %s" % repr(arg)
+            for i in inner.cache[arg]:
+                yield i
+        else:
+            print "Building new for %s" % repr(arg)
+            temp = []
+            for i in func(arg):
+                temp.append(i)
+                yield i
+            inner.cache[arg] = temp
+    inner.cache = {}
+    return inner
