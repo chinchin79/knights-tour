@@ -13,3 +13,6 @@ C.  Some people are confused by the statement that paths ‘do not wrap.’ To c
     means is that if a move goes off, say, the right edge of the board, it does not come back on the left. That is,
     the board is not on a cylinder or sphere or whatever. If a move would go off of the board, then it is not a
     legal move. It is not wrapped back onto the board.
+    
+    
+# Created and tested with Python2.7.10 running on Mac OS X El Capitan
